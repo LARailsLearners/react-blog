@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-var $ = require('jquery');
+// var $ = require('jquery');
 
 class App extends Component {
   constructor() {
@@ -10,15 +10,16 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.serverRequest = $.get('http://localhost:3000/articles', function (result) {
-      console.log(result);
-      var firstArticle = result[0];
-      this.setState({
-        title: firstArticle.title,
-        body: firstArticle.body
-      })
-    }.bind(this));
-  }
+    fetch('http://localhost:3000/articles.json')
+      .then(function(response) {
+        return response.json()
+      }).then(json => {
+          console.log(json);
+          this.setState({
+            articles: json
+          });
+        });
+      }
 
   render() {
     return (
@@ -31,11 +32,30 @@ class App extends Component {
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
         <div>
-          <h1>{ this.state.title }</h1>
-          <p>{ this.state.body }</p>
+          <ul>
+            <li>
+              <ArticlesList articles={ this.state.articles } />
+              <h1>{ this.state.title }</h1>
+              <p>{ this.state.body }</p>
+            </li>
+          </ul>
         </div>
       </div>
     );
+  }
+}
+
+class ArticlesList extends React.Component {
+  render() {
+    return <div>
+      { this.props.articles.map( (article, index) => {
+        return <div key={ index }>
+          <h1>{ article.title }</h1>
+          <p>{ article.body }</p>
+        </div>
+      })
+    }
+    </div>
   }
 }
 
