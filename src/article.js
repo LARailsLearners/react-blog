@@ -8,21 +8,12 @@ import { Router, Route, Link } from 'react-router'
 class App extends Component {
   constructor() {
     super();
-    this.state = { articles: [] };
+    this.state = { data: "", article: [] };
+    // this.getData = this.getData.bind(this)
   }
 
   componentDidMount() {
-    fetch('http://localhost:3000/articles.json')
-      .then(function(response) {
-        return response.json()
-      }).then(json => {
-        console.log(json);
-        this.setState({
-          articles: json
-        });
-      });
-
-    fetch('http://localhost:3000/1/article.json')
+    fetch('http://localhost:3000/articles/1.json')
       .then(function(response) {
         return response.json()
       }).then(json => {
@@ -31,8 +22,11 @@ class App extends Component {
           article: json
         });
       });
-    }
+  }
 
+  getData = (userInput) => {
+    this.setState({ data: userInput })
+  }
 
   render() {
     return (
@@ -47,9 +41,8 @@ class App extends Component {
         <div>
           <ul>
             <li>
-              <ArticlesList articles={ this.state.articles } />
-              <h1>{ this.state.title }</h1>
-              <p>{ this.state.body }</p>
+              <Article article={ this.state.article } getData={this.getData} />
+              <p>{this.state.data}</p>
             </li>
           </ul>
         </div>
@@ -58,21 +51,19 @@ class App extends Component {
   }
 }
 
-class ArticlesList extends React.Component {
-  render() {
-    return <div>
-      { this.props.articles.map( (article, index) => {
-        return <div key={ index }>
-          <h1>{ article.title }</h1>
-          <p>{ article.body }</p>
-        </div>
-      })
-    }
-    </div>
-  }
-}
 
 class Article extends React.Component {
-
+  handleChange = (e) => {
+    this.props.getData(e.target.value)
+  }
+  render() {
+    return (
+      <div>
+        <h1>{ this.props.article.title }</h1>
+        <p>{ this.props.article.body }</p>
+        <input onChange={this.handleChange} />
+      </div>
+    )
+  }
 }
 export default App;
